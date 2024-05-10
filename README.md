@@ -240,17 +240,17 @@ yarn build:linux
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/Hachi-R">
-            <img src="https://avatars.githubusercontent.com/u/58823742?v=4" width="100;" alt="Hachi-R"/>
-            <br />
-            <sub><b>Hachi</b></sub>
-        </a>
-    </td>
-    <td align="center">
         <a href="https://github.com/Mkdantas">
             <img src="https://avatars.githubusercontent.com/u/50972667?v=4" width="100;" alt="Mkdantas"/>
             <br />
             <sub><b>Matheus Dantas</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/Hachi-R">
+            <img src="https://avatars.githubusercontent.com/u/58823742?v=4" width="100;" alt="Hachi-R"/>
+            <br />
+            <sub><b>Hachi</b></sub>
         </a>
     </td>
     <td align="center">
@@ -276,6 +276,13 @@ yarn build:linux
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/Tunchichi">
+            <img src="https://avatars.githubusercontent.com/u/118926729?v=4" width="100;" alt="Tunchichi"/>
+            <br />
+            <sub><b>Ruslan</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/eltociear">
             <img src="https://avatars.githubusercontent.com/u/22633385?v=4" width="100;" alt="eltociear"/>
             <br />
@@ -290,10 +297,10 @@ yarn build:linux
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/Tunchichi">
-            <img src="https://avatars.githubusercontent.com/u/118926729?v=4" width="100;" alt="Tunchichi"/>
+        <a href="https://github.com/vnumex">
+            <img src="https://avatars.githubusercontent.com/u/10434535?v=4" width="100;" alt="vnumex"/>
             <br />
-            <sub><b>Ruslan</b></sub>
+            <sub><b>Vnumex</b></sub>
         </a>
     </td>
     <td align="center">
@@ -302,6 +309,14 @@ yarn build:linux
             <br />
             <sub><b>Firdavs</b></sub>
         </a>
+    </td></tr>
+<tr>
+    <td align="center">
+        <a href="https://github.com/PCTroller">
+            <img src="https://avatars.githubusercontent.com/u/146987801?v=4" width="100;" alt="PCTroller"/>
+            <br />
+            <sub><b>Null</b></sub>
+        </a>
     </td>
     <td align="center">
         <a href="https://github.com/Chr1s0Blood">
@@ -309,8 +324,14 @@ yarn build:linux
             <br />
             <sub><b>Cristian S.</b></sub>
         </a>
-    </td></tr>
-<tr>
+    </td>
+    <td align="center">
+        <a href="https://github.com/ChristoferMendes">
+            <img src="https://avatars.githubusercontent.com/u/107426464?v=4" width="100;" alt="ChristoferMendes"/>
+            <br />
+            <sub><b>Christofer Luiz Dos Santos Mendes</b></sub>
+        </a>
+    </td>
     <td align="center">
         <a href="https://github.com/userMacieG">
             <img src="https://avatars.githubusercontent.com/u/24211405?v=4" width="100;" alt="userMacieG"/>
