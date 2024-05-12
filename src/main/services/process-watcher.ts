@@ -20,6 +20,7 @@ export const startProcessWatcher = async () => {
     const games = await gameRepository.find({
       where: {
         executablePath: Not(IsNull()),
+        isDeleted: false,
       },
     });
 
