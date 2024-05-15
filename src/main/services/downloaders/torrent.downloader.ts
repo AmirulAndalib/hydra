@@ -1,7 +1,6 @@
 import path from "node:path";
 import cp from "node:child_process";
 import fs from "node:fs";
-import * as Sentry from "@sentry/electron/main";
 import { app, dialog } from "electron";
 import type { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
@@ -87,8 +86,6 @@ export class TorrentDownloader extends Downloader {
           downloadSpeed: payload.downloadSpeed,
           timeRemaining: payload.timeRemaining,
         });
-      } catch (err) {
-        Sentry.captureException(err);
       } finally {
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
@@ -124,20 +121,19 @@ export class TorrentDownloader extends Downloader {
           stdio: "inherit",
           windowsHide: true,
         });
-        return;
+      } else {
+        const scriptPath = path.join(
+          __dirname,
+          "..",
+          "..",
+          "torrent-client",
+          "main.py"
+        );
+
+        cp.spawn("python3", [scriptPath, ...commonArgs], {
+          stdio: "inherit",
+        });
       }
-
-      const scriptPath = path.join(
-        __dirname,
-        "..",
-        "..",
-        "torrent-client",
-        "main.py"
-      );
-
-      cp.spawn("python3", [scriptPath, ...commonArgs], {
-        stdio: "inherit",
-      });
 
       Promise.all([writePipe.createPipe(), readPipe.createPipe()]).then(
         async () => {

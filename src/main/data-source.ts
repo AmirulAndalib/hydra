@@ -3,9 +3,7 @@ import {
   Game,
   GameShopCache,
   Repack,
-  RepackerFriendlyName,
   UserPreferences,
-  MigrationScript,
   SteamGame,
   SteamGameAchievements,
 } from "@main/entity";
@@ -20,16 +18,13 @@ export const createDataSource = (options: Partial<SqliteConnectionOptions>) =>
     entities: [
       Game,
       Repack,
-      RepackerFriendlyName,
       UserPreferences,
       GameShopCache,
-      MigrationScript,
       SteamGame,
       SteamGameAchievements,
     ],
+    synchronize: true,
     ...options,
   });
 
-export const dataSource = createDataSource({
-  synchronize: true,
-});
+export const dataSource = createDataSource({});

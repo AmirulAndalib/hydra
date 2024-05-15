@@ -19,7 +19,6 @@ export function SettingsGeneral({
     downloadsPath: "",
     downloadNotificationsEnabled: false,
     repackUpdatesNotificationsEnabled: false,
-    telemetryEnabled: false,
   });
 
   useEffect(() => {
@@ -28,7 +27,6 @@ export function SettingsGeneral({
         downloadsPath,
         downloadNotificationsEnabled,
         repackUpdatesNotificationsEnabled,
-        telemetryEnabled,
       } = userPreferences;
 
       window.electron.getDefaultDownloadsPath().then((defaultDownloadsPath) => {
@@ -37,13 +35,17 @@ export function SettingsGeneral({
           downloadsPath: downloadsPath ?? defaultDownloadsPath,
           downloadNotificationsEnabled,
           repackUpdatesNotificationsEnabled,
-          telemetryEnabled,
         }));
       });
     }
   }, [userPreferences]);
 
   const { t } = useTranslation("settings");
+
+  const handleChange = (values: Partial<typeof form>) => {
+    setForm((prev) => ({ ...prev, ...values }));
+    updateUserPreferences(values);
+  };
 
   const handleChooseDownloadsPath = async () => {
     const { filePaths } = await window.electron.showOpenDialog({
@@ -53,13 +55,9 @@ export function SettingsGeneral({
 
     if (filePaths && filePaths.length > 0) {
       const path = filePaths[0];
+      handleChange({ downloadsPath: path });
       updateUserPreferences({ downloadsPath: path });
     }
-  };
-
-  const handleChange = (values: Partial<typeof form>) => {
-    setForm((prev) => ({ ...prev, ...values }));
-    updateUserPreferences(values);
   };
 
   return (
@@ -100,18 +98,6 @@ export function SettingsGeneral({
           handleChange({
             repackUpdatesNotificationsEnabled:
               !form.repackUpdatesNotificationsEnabled,
-          })
-        }
-      />
-
-      <h3>{t("telemetry")}</h3>
-
-      <CheckboxField
-        label={t("telemetry_description")}
-        checked={form.telemetryEnabled}
-        onChange={() =>
-          handleChange({
-            telemetryEnabled: !form.telemetryEnabled,
           })
         }
       />
