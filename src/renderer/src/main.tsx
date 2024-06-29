@@ -6,6 +6,8 @@ import { Provider } from "react-redux";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { HashRouter, Route, Routes } from "react-router-dom";
 
+import * as Sentry from "@sentry/electron/renderer";
+
 import "@fontsource/fira-mono/400.css";
 import "@fontsource/fira-mono/500.css";
 import "@fontsource/fira-mono/700.css";
@@ -27,6 +29,9 @@ import {
 import { store } from "./store";
 
 import * as resources from "@locales";
+import { User } from "./pages/user/user";
+
+Sentry.init({});
 
 i18n
   .use(LanguageDetector)
@@ -46,16 +51,17 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
       <HashRouter>
-        <App>
-          <Routes>
+        <Routes>
+          <Route element={<App />}>
             <Route path="/" Component={Home} />
             <Route path="/catalogue" Component={Catalogue} />
             <Route path="/downloads" Component={Downloads} />
             <Route path="/game/:shop/:objectID" Component={GameDetails} />
             <Route path="/search" Component={SearchResults} />
             <Route path="/settings" Component={Settings} />
-          </Routes>
-        </App>
+            <Route path="/user/:userId" Component={User} />
+          </Route>
+        </Routes>
       </HashRouter>
     </Provider>
   </React.StrictMode>

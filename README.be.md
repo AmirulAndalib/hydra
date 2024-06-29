@@ -18,6 +18,8 @@
 [![ru](https://img.shields.io/badge/lang-ru-yellow.svg)](README.ru.md)
 [![uk-UA](https://img.shields.io/badge/lang-uk--UA-blue)](README.uk-UA.md)
 [![be](https://img.shields.io/badge/lang-be-orange)](README.be.md)
+[![es](https://img.shields.io/badge/lang-es-red)](README.es.md)
+[![fr](https://img.shields.io/badge/lang-fr-blue)](README.fr.md)
 
 ![Hydra Catalogue](./docs/screenshot.png)
 
@@ -119,7 +121,7 @@ yarn
 
 ### Усталёўка Python 3.9
 
-Упэўніцеся, што ў вас усталяваны Python 3.9 на вашым кампутары. Вы можаце загрузіць і ўсталяваць яго з [python.org](https://www.python.org/downloads/release/python-3919/).
+Упэўніцеся, што ў вас усталяваны Python 3.9 на вашым кампутары. Вы можаце загрузіць і ўсталяваць яго з [python.org](https://www.python.org/downloads/release/python-3913/).
 
 ### Усталёўка залежнасцяў Python
 

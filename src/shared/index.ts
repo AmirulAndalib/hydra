@@ -1,17 +1,11 @@
-export enum GameStatus {
-  Seeding = "seeding",
-  Downloading = "downloading",
-  Paused = "paused",
-  CheckingFiles = "checking_files",
-  DownloadingMetadata = "downloading_metadata",
-  Cancelled = "cancelled",
-  Decompressing = "decompressing",
-  Finished = "finished",
-}
-
 export enum Downloader {
   RealDebrid,
   Torrent,
+}
+
+export enum DownloadSourceStatus {
+  UpToDate,
+  Errored,
 }
 
 const FORMAT = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
@@ -30,23 +24,30 @@ export const formatBytes = (bytes: number): string => {
   return `${Math.trunc(formatedByte * 10) / 10} ${FORMAT[base]}`;
 };
 
-export class GameStatusHelper {
-  public static isDownloading(status: GameStatus | null) {
-    return (
-      status === GameStatus.Downloading ||
-      status === GameStatus.DownloadingMetadata ||
-      status === GameStatus.CheckingFiles
-    );
-  }
+export const pipe =
+  <T>(...fns: ((arg: T) => any)[]) =>
+  (arg: T) =>
+    fns.reduce((prev, fn) => fn(prev), arg);
 
-  public static isVerifying(status: GameStatus | null) {
-    return (
-      GameStatus.DownloadingMetadata == status ||
-      GameStatus.CheckingFiles == status
-    );
-  }
+export const removeReleaseYearFromName = (name: string) =>
+  name.replace(/\([0-9]{4}\)/g, "");
 
-  public static isReady(status: GameStatus | null) {
-    return status === GameStatus.Finished || status === GameStatus.Seeding;
-  }
-}
+export const removeSymbolsFromName = (name: string) =>
+  name.replace(/[^A-Za-z 0-9]/g, "");
+
+export const removeSpecialEditionFromName = (name: string) =>
+  name.replace(
+    /(The |Digital )?(GOTY|Deluxe|Standard|Ultimate|Definitive|Enhanced|Collector's|Premium|Digital|Limited|Game of the Year|Reloaded|[0-9]{4}) Edition/g,
+    ""
+  );
+
+export const removeDuplicateSpaces = (name: string) =>
+  name.replace(/\s{2,}/g, " ");
+
+export const formatName = pipe<string>(
+  removeReleaseYearFromName,
+  removeSymbolsFromName,
+  removeSpecialEditionFromName,
+  removeDuplicateSpaces,
+  (str) => str.trim()
+);

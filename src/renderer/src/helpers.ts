@@ -1,4 +1,6 @@
-import type { CatalogueEntry } from "@types";
+import type { GameShop } from "@types";
+
+import Color from "color";
 
 export const steamUrlBuilder = {
   library: (objectID: string) =>
@@ -34,9 +36,12 @@ export const getSteamLanguage = (language: string) => {
 };
 
 export const buildGameDetailsPath = (
-  game: Pick<CatalogueEntry, "title" | "shop" | "objectID">,
+  game: { shop: GameShop; objectID: string; title: string },
   params: Record<string, string> = {}
 ) => {
   const searchParams = new URLSearchParams({ title: game.title, ...params });
   return `/game/${game.shop}/${game.objectID}?${searchParams.toString()}`;
 };
+
+export const darkenColor = (color: string, amount: number, alpha: number = 1) =>
+  new Color(color).darken(amount).alpha(alpha).toString();

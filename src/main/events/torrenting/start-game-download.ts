@@ -1,38 +1,30 @@
 import {
+  downloadQueueRepository,
   gameRepository,
   repackRepository,
-  userPreferencesRepository,
 } from "@main/repository";
 
 import { registerEvent } from "../register-event";
 
-import type { GameShop } from "@types";
+import type { StartGameDownloadPayload } from "@types";
 import { getFileBase64, getSteamAppAsset } from "@main/helpers";
-import { In } from "typeorm";
 import { DownloadManager } from "@main/services";
-import { Downloader, GameStatus } from "@shared";
-import { stateManager } from "@main/state-manager";
+
+import { Not } from "typeorm";
+import { steamGamesWorker } from "@main/workers";
+import { createGame } from "@main/services/library-sync";
 
 const startGameDownload = async (
   _event: Electron.IpcMainInvokeEvent,
-  repackId: number,
-  objectID: string,
-  title: string,
-  gameShop: GameShop,
-  downloadPath: string
+  payload: StartGameDownloadPayload
 ) => {
-  const userPreferences = await userPreferencesRepository.findOne({
-    where: { id: 1 },
-  });
-
-  const downloader = userPreferences?.realDebridApiToken
-    ? Downloader.RealDebrid
-    : Downloader.Torrent;
+  const { repackId, objectID, title, shop, downloadPath, downloader } = payload;
 
   const [game, repack] = await Promise.all([
     gameRepository.findOne({
       where: {
         objectID,
+        shop,
       },
     }),
     repackRepository.findOne({
@@ -42,18 +34,13 @@ const startGameDownload = async (
     }),
   ]);
 
-  if (!repack || game?.status === GameStatus.Downloading) return;
-  DownloadManager.pauseDownload();
+  if (!repack) return;
+
+  await DownloadManager.pauseDownload();
 
   await gameRepository.update(
-    {
-      status: In([
-        GameStatus.Downloading,
-        GameStatus.DownloadingMetadata,
-        GameStatus.CheckingFiles,
-      ]),
-    },
-    { status: GameStatus.Paused }
+    { status: "active", progress: Not(1) },
+    { status: "paused" }
   );
 
   if (game) {
@@ -62,38 +49,34 @@ const startGameDownload = async (
         id: game.id,
       },
       {
-        status: GameStatus.DownloadingMetadata,
-        downloadPath: downloadPath,
+        status: "active",
+        progress: 0,
+        bytesDownloaded: 0,
+        downloadPath,
         downloader,
-        repack: { id: repackId },
+        uri: repack.magnet,
         isDeleted: false,
       }
     );
-
-    DownloadManager.downloadGame(game.id);
-
-    game.status = GameStatus.DownloadingMetadata;
-
-    return game;
   } else {
-    const steamGame = stateManager
-      .getValue("steamGames")
-      .find((game) => game.id === Number(objectID));
+    const steamGame = await steamGamesWorker.run(Number(objectID), {
+      name: "getById",
+    });
 
     const iconUrl = steamGame?.clientIcon
       ? getSteamAppAsset("icon", objectID, steamGame.clientIcon)
       : null;
 
-    const createdGame = await gameRepository
-      .save({
+    await gameRepository
+      .insert({
         title,
         iconUrl,
         objectID,
         downloader,
-        shop: gameShop,
-        status: GameStatus.Downloading,
+        shop,
+        status: "active",
         downloadPath,
-        repack: { id: repackId },
+        uri: repack.magnet,
       })
       .then((result) => {
         if (iconUrl) {
@@ -104,13 +87,31 @@ const startGameDownload = async (
 
         return result;
       });
-
-    DownloadManager.downloadGame(createdGame.id);
-
-    const { repack: _, ...rest } = createdGame;
-
-    return rest;
   }
+
+  const updatedGame = await gameRepository.findOne({
+    where: {
+      objectID,
+    },
+  });
+
+  createGame(updatedGame!).then((response) => {
+    const {
+      id: remoteId,
+      playTimeInMilliseconds,
+      lastTimePlayed,
+    } = response.data;
+
+    gameRepository.update(
+      { objectID },
+      { remoteId, playTimeInMilliseconds, lastTimePlayed }
+    );
+  });
+
+  await downloadQueueRepository.delete({ game: { id: updatedGame!.id } });
+  await downloadQueueRepository.insert({ game: { id: updatedGame!.id } });
+
+  await DownloadManager.startDownload(updatedGame!);
 };
 
 registerEvent("startGameDownload", startGameDownload);

@@ -1,7 +1,6 @@
 {
   "home": {
     "featured": "Anbefalet",
-    "recently_added": "Nyligt tilføjet",
     "trending": "Trender",
     "surprise_me": "Overrask mig",
     "no_results": "Ingen resultater fundet"
@@ -12,16 +11,10 @@
     "settings": "Indstillinger",
     "my_library": "Mit bibliotek",
     "downloading_metadata": "{{title}} (Downloader metadata…)",
-    "checking_files": "{{title}} ({{percentage}} - Tjekker filer…)",
     "paused": "{{title}} (Paused)",
     "downloading": "{{title}} ({{percentage}} - Downloading…)",
     "filter": "Filtrer bibliotek",
-    "follow_us": "Følg os",
-    "home": "Hjem",
-    "discord": "Tilslut dig vores Discord",
-    "telegram": "Tilslut dig vores Telegram",
-    "x": "Følg på X",
-    "github": "Bidrag på GitHub"
+    "home": "Hjem"
   },
   "header": {
     "search": "Søg spil",
@@ -34,7 +27,6 @@
   "bottom_panel": {
     "no_downloads_in_progress": "Ingen downloads igang",
     "downloading_metadata": "Downloader {{title}} metadata…",
-    "checking_files": "Tjekker {{title}} filer… ({{percentage}} færdig)",
     "downloading": "Downloader {{title}}… ({{percentage}} færdig) - Konklusion {{eta}} - {{speed}}"
   },
   "catalogue": {
@@ -52,22 +44,15 @@
     "pause": "Pause",
     "cancel": "Annullér",
     "remove": "Fjern",
-    "remove_from_list": "Fjern",
     "space_left_on_disk": "{{space}} tilbage på harddisken",
     "eta": "Konklusion {{eta}}",
     "downloading_metadata": "Downloader metadata…",
-    "checking_files": "Tjekker filer…",
     "filter": "Filtrer repacks",
     "requirements": "System behov",
     "minimum": "Mindste",
     "recommended": "Anbefalet",
-    "no_minimum_requirements": "{{title}} angiver ikke mindste behov informationer",
-    "no_recommended_requirements": "{{title}} angiver ikke anbefalet behov informationer",
-    "paused_progress": "{{progress}} (Pauset)",
     "release_date": "Offentliggjort den {{date}}",
     "publisher": "Udgivet af {{publisher}}",
-    "copy_link_to_clipboard": "Kopier link",
-    "copied_link_to_clipboard": "Link kopieret",
     "hours": "timer",
     "minutes": "minutter",
     "amount_hours": "{{amount}} timer",
@@ -86,17 +71,8 @@
     "playing_now": "Spiller nu",
     "change": "Ændré",
     "repacks_modal_description": "Vælg den repack du vil downloade",
-    "downloads_path": "Downloads sti",
     "select_folder_hint": "For at ændre standard mappen, gå til <0>Instillingerne</0>",
-    "download_now": "Download nu",
-    "installation_instructions": "Installations Instrukser",
-    "installation_instructions_description": "Yderligere skridt er krævet for at installere dette spil",
-    "online_fix_instruction": "OnlineFix spil kræver et kodeord for at kunne blive udpakket. Når krævet, brug det følgende kodeord:",
-    "dodi_installation_instruction": "Når du åbner DODI installatør, tryk på op-knappen på dit tastatur <0 /> for at starte installations processen:",
-    "dont_show_it_again": "Vis ikke igen",
-    "copy_to_clipboard": "Kopier",
-    "copied_to_clipboard": "Kopieret",
-    "got_it": "Forstået"
+    "download_now": "Download nu"
   },
   "activation": {
     "title": "Aktivér Hydra",
@@ -112,24 +88,16 @@
     "eta": "Konklusion {{eta}}",
     "paused": "Pauset",
     "verifying": "Verificerer…",
-    "completed_at": "Færdiggjort på {{date}}",
     "completed": "Færdigt",
-    "cancelled": "Annulleret",
-    "download_again": "Download igen",
     "cancel": "Annullér",
     "filter": "Filtrer downloadet spil",
     "remove": "Fjern",
     "downloading_metadata": "Downloader metadata…",
-    "checking_files": "Tjekker filer…",
-    "starting_download": "Starter download…",
     "deleting": "Sletter installatør…",
     "delete": "Fjern installatør",
-    "remove_from_list": "Fjern",
     "delete_modal_title": "Er du sikker?",
     "delete_modal_description": "Dette vil fjerne alle installations filerne fra din computer",
-    "install": "Installér",
-    "real_debrid": "Real Debrid",
-    "torrent": "Torrent"
+    "install": "Installér"
   },
   "settings": {
     "downloads_path": "Downloads sti",
@@ -137,16 +105,12 @@
     "notifications": "Notifikationer",
     "enable_download_notifications": "Når et download bliver færdigt",
     "enable_repack_list_notifications": "Når en ny repack bliver tilføjet",
-    "telemetry": "Telemetri",
-    "telemetry_description": "Slå anonymt brugs statistik til",
-    "real_debrid_api_token_description": "Real Debrid API token",
     "quit_app_instead_hiding": "Afslut Hydra instedet for at minimere til processlinjen",
     "launch_with_system": "Åben Hydra ved start af systemet",
     "general": "Generelt",
     "behavior": "Opførsel",
-    "enable_real_debrid": "Slå Real Debrid til",
-    "real_debrid": "Real Debrid",
-    "real_debrid_api_token_hint": "Du kan få din API nøgle <0>her</0>.",
+    "enable_real_debrid": "Slå Real-Debrid til",
+    "real_debrid_api_token_hint": "Du kan få din API nøgle <0>her</0>",
     "save_changes": "Gem ændringer"
   },
   "notifications": {

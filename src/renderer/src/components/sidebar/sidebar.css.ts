@@ -1,5 +1,6 @@
 import { style } from "@vanilla-extract/css";
 import { recipe } from "@vanilla-extract/recipes";
+
 import { SPACING_UNIT, vars } from "../../theme.css";
 
 export const sidebar = recipe({
@@ -11,6 +12,7 @@ export const sidebar = recipe({
     transition: "opacity ease 0.2s",
     borderRight: `solid 1px ${vars.color.border}`,
     position: "relative",
+    overflow: "hidden",
   },
   variants: {
     resizing: {
@@ -27,7 +29,7 @@ export const content = recipe({
     display: "flex",
     flexDirection: "column",
     padding: `${SPACING_UNIT * 2}px`,
-    paddingBottom: "0",
+    gap: `${SPACING_UNIT * 2}px`,
     width: "100%",
     overflow: "auto",
   },
@@ -118,7 +120,6 @@ export const sectionTitle = style({
 });
 
 export const section = style({
-  padding: `${SPACING_UNIT * 2}px 0`,
   gap: `${SPACING_UNIT * 2}px`,
   display: "flex",
   flexDirection: "column",

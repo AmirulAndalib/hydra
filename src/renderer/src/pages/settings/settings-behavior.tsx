@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { UserPreferences } from "@types";
-
 import { CheckboxField } from "@renderer/components";
+import { useAppSelector } from "@renderer/hooks";
+import { settingsContext } from "@renderer/context";
 
-export interface SettingsBehaviorProps {
-  userPreferences: UserPreferences | null;
-  updateUserPreferences: (values: Partial<UserPreferences>) => void;
-}
+export function SettingsBehavior() {
+  const userPreferences = useAppSelector(
+    (state) => state.userPreferences.value
+  );
 
-export function SettingsBehavior({
-  updateUserPreferences,
-  userPreferences,
-}: SettingsBehaviorProps) {
+  const [showRunAtStartup, setShowRunAtStartup] = useState(false);
+
+  const { updateUserPreferences } = useContext(settingsContext);
+
   const [form, setForm] = useState({
     preferQuitInsteadOfHiding: false,
     runAtStartup: false,
@@ -29,6 +29,12 @@ export function SettingsBehavior({
       });
     }
   }, [userPreferences]);
+
+  useEffect(() => {
+    window.electron.isPortableVersion().then((isPortableVersion) => {
+      setShowRunAtStartup(!isPortableVersion);
+    });
+  }, []);
 
   const handleChange = (values: Partial<typeof form>) => {
     setForm((prev) => ({ ...prev, ...values }));
@@ -47,14 +53,16 @@ export function SettingsBehavior({
         }
       />
 
-      <CheckboxField
-        label={t("launch_with_system")}
-        onChange={() => {
-          handleChange({ runAtStartup: !form.runAtStartup });
-          window.electron.autoLaunch(!form.runAtStartup);
-        }}
-        checked={form.runAtStartup}
-      />
+      {showRunAtStartup && (
+        <CheckboxField
+          label={t("launch_with_system")}
+          onChange={() => {
+            handleChange({ runAtStartup: !form.runAtStartup });
+            window.electron.autoLaunch(!form.runAtStartup);
+          }}
+          checked={form.runAtStartup}
+        />
+      )}
     </>
   );
 }

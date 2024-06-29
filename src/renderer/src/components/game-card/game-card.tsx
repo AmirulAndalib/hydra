@@ -2,10 +2,10 @@ import { DownloadIcon, FileDirectoryIcon } from "@primer/octicons-react";
 import type { CatalogueEntry } from "@types";
 
 import SteamLogo from "@renderer/assets/steam-logo.svg?react";
-import EpicGamesLogo from "@renderer/assets/epic-games-logo.svg?react";
 
 import * as styles from "./game-card.css";
 import { useTranslation } from "react-i18next";
+import { Badge } from "../badge/badge";
 
 export interface GameCardProps
   extends React.DetailedHTMLProps<
@@ -16,7 +16,6 @@ export interface GameCardProps
 }
 
 const shopIcon = {
-  epic: <EpicGamesLogo className={styles.shopIcon} />,
   steam: <SteamLogo className={styles.shopIcon} />,
 };
 
@@ -41,8 +40,8 @@ export function GameCard({ game, ...props }: GameCardProps) {
           {uniqueRepackers.length > 0 ? (
             <ul className={styles.downloadOptions}>
               {uniqueRepackers.map((repacker) => (
-                <li key={repacker} className={styles.downloadOption}>
-                  <span>{repacker}</span>
+                <li key={repacker}>
+                  <Badge>{repacker}</Badge>
                 </li>
               ))}
             </ul>

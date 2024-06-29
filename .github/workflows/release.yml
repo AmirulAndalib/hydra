@@ -1,4 +1,4 @@
-name: Build
+name: Release
 
 on:
   push:
@@ -41,6 +41,9 @@ jobs:
         env:
           MAIN_VITE_ONLINEFIX_USERNAME: ${{ secrets.ONLINEFIX_USERNAME }}
           MAIN_VITE_ONLINEFIX_PASSWORD: ${{ secrets.ONLINEFIX_PASSWORD }}
+          MAIN_VITE_API_URL: ${{ vars.MAIN_VITE_API_URL }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          MAIN_VITE_SENTRY_DSN: ${{ vars.MAIN_VITE_SENTRY_DSN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build Windows
@@ -49,6 +52,9 @@ jobs:
         env:
           MAIN_VITE_ONLINEFIX_USERNAME: ${{ secrets.ONLINEFIX_USERNAME }}
           MAIN_VITE_ONLINEFIX_PASSWORD: ${{ secrets.ONLINEFIX_PASSWORD }}
+          MAIN_VITE_API_URL: ${{ vars.MAIN_VITE_API_URL }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          MAIN_VITE_SENTRY_DSN: ${{ vars.MAIN_VITE_SENTRY_DSN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release

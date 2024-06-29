@@ -1,19 +1,20 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import type { Game } from "@types";
+import type { LibraryGame } from "@types";
 
 import { TextField } from "@renderer/components";
-import { useDownload, useLibrary } from "@renderer/hooks";
+import { useDownload, useLibrary, useToast } from "@renderer/hooks";
 
 import { routes } from "./routes";
 
 import * as styles from "./sidebar.css";
-import { GameStatus, GameStatusHelper } from "@shared";
 import { buildGameDetailsPath } from "@renderer/helpers";
 
 import SteamLogo from "@renderer/assets/steam-logo.svg?react";
+import { SidebarProfile } from "./sidebar-profile";
+import { sortBy } from "lodash-es";
 
 const SIDEBAR_MIN_WIDTH = 200;
 const SIDEBAR_INITIAL_WIDTH = 250;
@@ -26,7 +27,7 @@ export function Sidebar() {
   const { library, updateLibrary } = useLibrary();
   const navigate = useNavigate();
 
-  const [filteredLibrary, setFilteredLibrary] = useState<Game[]>([]);
+  const [filteredLibrary, setFilteredLibrary] = useState<LibraryGame[]>([]);
 
   const [isResizing, setIsResizing] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(
@@ -35,14 +36,20 @@ export function Sidebar() {
 
   const location = useLocation();
 
-  const { game: gameDownloading, progress } = useDownload();
+  const sortedLibrary = useMemo(() => {
+    return sortBy(library, (game) => game.title);
+  }, [library]);
+
+  const { lastPacket, progress } = useDownload();
+
+  const { showWarningToast } = useToast();
 
   useEffect(() => {
     updateLibrary();
-  }, [gameDownloading?.id, updateLibrary]);
+  }, [lastPacket?.game.id, updateLibrary]);
 
-  const isDownloading = library.some((game) =>
-    GameStatusHelper.isDownloading(game.status)
+  const isDownloading = sortedLibrary.some(
+    (game) => game.status === "active" && game.progress !== 1
   );
 
   const sidebarRef = useRef<HTMLElement>(null);
@@ -61,7 +68,7 @@ export function Sidebar() {
 
   const handleFilter: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     setFilteredLibrary(
-      library.filter((game) =>
+      sortedLibrary.filter((game) =>
         game.title
           .toLowerCase()
           .includes(event.target.value.toLocaleLowerCase())
@@ -70,8 +77,8 @@ export function Sidebar() {
   };
 
   useEffect(() => {
-    setFilteredLibrary(library);
-  }, [library]);
+    setFilteredLibrary(sortedLibrary);
+  }, [sortedLibrary]);
 
   useEffect(() => {
     window.onmousemove = (event: MouseEvent) => {
@@ -100,24 +107,19 @@ export function Sidebar() {
     };
   }, [isResizing]);
 
-  const getGameTitle = (game: Game) => {
-    if (game.status === GameStatus.Paused)
-      return t("paused", { title: game.title });
-
-    if (gameDownloading?.id === game.id) {
-      const isVerifying = GameStatusHelper.isVerifying(gameDownloading.status);
-
-      if (isVerifying)
-        return t(gameDownloading.status!, {
-          title: game.title,
-          percentage: progress,
-        });
-
+  const getGameTitle = (game: LibraryGame) => {
+    if (lastPacket?.game.id === game.id) {
       return t("downloading", {
         title: game.title,
         percentage: progress,
       });
     }
+
+    if (game.downloadQueue !== null) {
+      return t("queued", { title: game.title });
+    }
+
+    if (game.status === "paused") return t("paused", { title: game.title });
 
     return game.title;
   };
@@ -128,96 +130,117 @@ export function Sidebar() {
     }
   };
 
+  const handleSidebarGameClick = (
+    event: React.MouseEvent,
+    game: LibraryGame
+  ) => {
+    const path = buildGameDetailsPath(game);
+    if (path !== location.pathname) {
+      navigate(path);
+    }
+
+    if (event.detail == 2) {
+      if (game.executablePath) {
+        window.electron.openGame(game.id, game.executablePath);
+      } else {
+        showWarningToast(t("game_has_no_executable"));
+      }
+    }
+  };
+
   return (
-    <aside
-      ref={sidebarRef}
-      className={styles.sidebar({ resizing: isResizing })}
-      style={{
-        width: sidebarWidth,
-        minWidth: sidebarWidth,
-        maxWidth: sidebarWidth,
-      }}
-    >
-      <div
-        className={styles.content({
-          macos: window.electron.platform === "darwin",
-        })}
+    <>
+      <aside
+        ref={sidebarRef}
+        className={styles.sidebar({ resizing: isResizing })}
+        style={{
+          width: sidebarWidth,
+          minWidth: sidebarWidth,
+          maxWidth: sidebarWidth,
+        }}
       >
-        {window.electron.platform === "darwin" && <h2>Hydra</h2>}
+        <SidebarProfile />
 
-        <section className={styles.section}>
-          <ul className={styles.menu}>
-            {routes.map(({ nameKey, path, render }) => (
-              <li
-                key={nameKey}
-                className={styles.menuItem({
-                  active: location.pathname === path,
-                })}
-              >
-                <button
-                  type="button"
-                  className={styles.menuItemButton}
-                  onClick={() => handleSidebarItemClick(path)}
+        <div
+          className={styles.content({
+            macos: window.electron.platform === "darwin",
+          })}
+        >
+          {window.electron.platform === "darwin" && <h2>Hydra</h2>}
+
+          <section className={styles.section}>
+            <ul className={styles.menu}>
+              {routes.map(({ nameKey, path, render }) => (
+                <li
+                  key={nameKey}
+                  className={styles.menuItem({
+                    active: location.pathname === path,
+                  })}
                 >
-                  {render(isDownloading)}
-                  <span>{t(nameKey)}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
+                  <button
+                    type="button"
+                    className={styles.menuItemButton}
+                    onClick={() => handleSidebarItemClick(path)}
+                  >
+                    {render(isDownloading)}
+                    <span>{t(nameKey)}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
 
-        <section className={styles.section}>
-          <small className={styles.sectionTitle}>{t("my_library")}</small>
+          <section className={styles.section}>
+            <small className={styles.sectionTitle}>{t("my_library")}</small>
 
-          <TextField
-            placeholder={t("filter")}
-            onChange={handleFilter}
-            theme="dark"
-          />
+            <TextField
+              placeholder={t("filter")}
+              onChange={handleFilter}
+              theme="dark"
+            />
 
-          <ul className={styles.menu}>
-            {filteredLibrary.map((game) => (
-              <li
-                key={game.id}
-                className={styles.menuItem({
-                  active:
-                    location.pathname === `/game/${game.shop}/${game.objectID}`,
-                  muted: game.status === GameStatus.Cancelled,
-                })}
-              >
-                <button
-                  type="button"
-                  className={styles.menuItemButton}
-                  onClick={() =>
-                    handleSidebarItemClick(buildGameDetailsPath(game))
-                  }
+            <ul className={styles.menu}>
+              {filteredLibrary.map((game) => (
+                <li
+                  key={game.id}
+                  className={styles.menuItem({
+                    active:
+                      location.pathname ===
+                      `/game/${game.shop}/${game.objectID}`,
+                    muted: game.status === "removed",
+                  })}
                 >
-                  {game.iconUrl ? (
-                    <img
-                      className={styles.gameIcon}
-                      src={game.iconUrl}
-                      alt={game.title}
-                    />
-                  ) : (
-                    <SteamLogo className={styles.gameIcon} />
-                  )}
+                  <button
+                    type="button"
+                    className={styles.menuItemButton}
+                    onClick={(event) => handleSidebarGameClick(event, game)}
+                  >
+                    {game.iconUrl ? (
+                      <img
+                        className={styles.gameIcon}
+                        src={game.iconUrl}
+                        alt={game.title}
+                      />
+                    ) : (
+                      <SteamLogo className={styles.gameIcon} />
+                    )}
 
-                  <span className={styles.menuItemButtonLabel}>
-                    {getGameTitle(game)}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
+                    <span className={styles.menuItemButtonLabel}>
+                      {getGameTitle(game)}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
 
-      <button
-        type="button"
-        className={styles.handle}
-        onMouseDown={handleMouseDown}
-      />
-    </aside>
+        <button
+          type="button"
+          className={styles.handle}
+          onMouseDown={handleMouseDown}
+        />
+      </aside>
+    </>
   );
 }
